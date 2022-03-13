@@ -1,0 +1,107 @@
+$ADRoot = (Get-ADDomain).DistinguishedName
+
+$DnsRoot = (Get-ADDomain).DNSRoot
+
+$OUCanonicalName = "DESIRED OU NAME"
+
+$OUDisplayName = "DESIRED OU NAME"
+
+$ADPath = "OU=$($OUCanonicalName),$($ADRoot)"
+
+             
+
+#If statement to determine existence of OU and create it if not already made
+
+if (-Not([ADSI]::Exists("LDAP://$($ADPath)"))) {
+
+New-ADOrganizationalUnit -Path $ADRoot -Name $OUCanonicalName -DisplayName $OUDisplayName -ProtectedFromAccidentalDeletion $true
+
+Write-Host -ForegroundColor Cyan "[AD]: $($OUCanonicalName) OU Created"
+
+}
+
+else 
+
+{
+
+#Else writes prompt that OU Exists
+
+Write-Host "$($OUCanonicalName) Already Exists"     
+
+} 
+
+         
+
+#Reads CSV File into table
+
+            
+
+$NewADUsers = Import-Csv -Path C:\YOUR CSV FILE PATH\YOUR CSV FILE
+
+         
+
+#Creates values for reporting status
+
+$numberNewUsers = $NewADUsers.Count
+
+$count = 1
+
+            
+
+ForEach ($ADUser in $NewADUsers)
+
+{            
+
+#Assigns variables to column values
+
+$First = $ADUser.First_Name
+
+$Last = $ADUser.Last_Name
+
+$Name = $First + " " + $Last
+
+$SamAcct = $ADUser.samAccount
+
+$Postal = $ADUser.PostalCode
+
+$Office = $ADUser.OfficePhone
+
+$Mobile = $ADUser.MobilePhone
+
+         
+
+#Creates and displays status
+
+$status = "[AD]: Adding AD User: $($Name) $($count) of $($numberNewUsers))"
+
+Write-Progress -Activity 'Creating users for your new OU, please stand by...' -Status $status -PercentComplete (($count/$numberNewUsers) * 100)
+
+#Creates new AD Users with given values
+
+New-ADUser  -GivenName $First `
+
+            -Surname $Last `
+
+            -Name $Name `
+
+            -SamAccountName $SamAcct `
+
+            -DisplayName $Name `
+
+            -PostalCode $Postal `
+
+            -MobilePhone $Mobile `
+
+            -OfficePhone $Office `
+
+            -Path $ADPath
+
+                 
+
+#Incriment counter
+
+$count++            
+
+}
+
+Write-Host -ForegroundColor Cyan "[AD]: Active Directory Tasks Complete"
