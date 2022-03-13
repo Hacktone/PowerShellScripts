@@ -24,7 +24,7 @@ $databaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Databa
 
 $databaseObject.Create()
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
  #Before invoking "Sqlcmd" create a .sql file in your scripts working folder. This will be used by Powershell to create the tables in your database. Below is an example, you may change these values as needed. 
 
@@ -49,7 +49,7 @@ Create Table YOUR TABLE NAME
         
 
 )
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 #Invoke to execute T-SQL Code
 
