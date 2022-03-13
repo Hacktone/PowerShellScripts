@@ -1,0 +1,88 @@
+# Import SqlServer Module
+
+if (Get-Module -Name sqlps) { Remove-Module sqlps }
+
+Import-Module -Name SqlServer
+
+# Name of the SQL Instance
+
+$sqlServerInstanceName = ".\SQLEXPRESS"
+
+# An object to reference the sql server
+
+$sqlServerObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Server -ArgumentList $sqlServerInstanceName
+
+# A string variable equal to the database name
+
+$databaseName = 'YOUR DATABASE NAME' 
+
+#An object reference to the database
+
+$databaseObject = New-Object -TypeName Microsoft.SqlServer.Management.Smo.Database -ArgumentList $sqlServerObject, $databaseName
+
+#Call the create method to create database
+
+$databaseObject.Create()
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ #Before invoking "Sqlcmd" create a .sql file in your scripts working folder. This will be used by Powershell to create the tables in your database. Below is an example, you may change these values as needed. 
+
+Create Table YOUR TABLE NAME
+
+(
+
+        First_Name VARCHAR(100),
+
+        Last_Name VARCHAR(100),
+
+        City VARCHAR(50),
+
+        County VARCHAR(50),
+
+        Zip VARCHAR(25),
+
+        OfficePhone VARCHAR(15),
+
+        MobilePhone VARCHAR(15)
+
+        
+
+)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Invoke to execute T-SQL Code
+
+Invoke-Sqlcmd -ServerInstance $sqlServerInstanceName -Database $databaseName -InputFile $PSScriptRoot\YOUR TABLE FILE.sql
+
+$tablename = 'YOUR TABLE NAME'
+
+$Insert = "INSERT INTO [$($tableName)] (first_name, last_name, city, county, zip, officePhone, mobilePhone) "
+
+$NewClientData = Import-Csv C:\YOUR FILE PATH\YOUR CSV FILE.csv
+
+ForEach($NewClient in $NewClientData)
+
+{
+
+    $Values = "VALUES ( `
+
+                    '$($NewClient.first_name)', `
+
+                    '$($NewClient.last_name)', `
+
+                    '$($NewClient.city)', `
+
+                    '$($NewClient.county)', `
+
+                    '$($NewClient.zip)', `
+
+                    '$($NewClient.officePhone)', `
+
+                    '$($NewClient.mobilePhone)')"
+
+    $query = $Insert + $Values
+
+    Invoke-Sqlcmd -Database $databaseName -ServerInstance $sqlServerInstanceName -Query $query
+
+}
