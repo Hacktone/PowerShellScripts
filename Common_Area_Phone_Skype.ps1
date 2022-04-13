@@ -1,4 +1,4 @@
-his can be modified to create a Common Area Phone and assign a pin through powershell. Update the items that are in BOLD RED with the correct information. You will need to verify the following information before proceeding:
+#This can be modified to create a Common Area Phone and assign a pin through powershell. Update the items that are in BOLD RED with the correct information. You will need to verify the following information before proceeding:
  
 
 Line URI
@@ -7,7 +7,7 @@ Display Name
 Description
 Registrar Pool      
  
-Use the following command to check if the number is available:
+#Use the following command to check if the number is available:
  
 
 Get-CsUser | where {$_.LineURI -eq "tel:+PhoneNumber" -or $_.PrivateLine -eq "tel:+PhoneNumber"} | Sort-Object LineURI | Select-Object Displayname, LineURI, PrivateLine
@@ -16,7 +16,7 @@ Get-CsUser | where {$_.LineURI -eq "tel:+PhoneNumber" -or $_.PrivateLine -eq "te
 Set-CsClientPin -Identity "IDENTITY" -Pin 123123
 
 
-If this does not provide a result it should be available to be used
+#If this does not provide a result it should be available to be used
 
 Get-CsCommonAreaPhone provides all common area phones
 
@@ -46,7 +46,7 @@ Get-CsAnalogDevice | where {$_.LineURI -eq $PhoneNumber} | Sort-Object LineURI |
 
 Disable-CsUser -Identity "UserName"
 
-
+#Below is a powershell script in progress, not intended for use at this time 4.12.2022
 
 $PhoneNumber = tel:+15555555555
 
